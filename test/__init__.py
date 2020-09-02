@@ -47,3 +47,24 @@ class TestPatterns(TestCase):
                "TrialsRegistry (ACTRN 12612000026820)."
         output = main(text)
         self.assertEquals(output[0].get('label'), 'TRIAL_REGISTRATION_ID')
+
+    def test_extract_trial_registration_1(self):
+        text = "registered on the internal standardised randomised controlled trial " \
+               "register (ISRCTN no. 90464927)"
+        output = main(text)
+        self.assertEquals(output[0].get('label'), 'TRIAL_REGISTRATION_ID')
+
+    def test_extract_trial_registration_2(self):
+        text = "European Clinical Trial Registry, EudraCT#2016-000891-54."
+        output = main(text)
+        self.assertEquals(output[0].get('label'), 'TRIAL_REGISTRATION_ID')
+
+    def test_extract_trial_registration_3(self):
+        text = "European Clinical Trial Registry, EudraCT #2016-000891-54."
+        output = main(text)
+        self.assertEquals(output[0].get('label'), 'TRIAL_REGISTRATION_ID')
+
+    def test_extract_trial_registration_4(self):
+        text = "EudraCT Number: 2018-001516-30"
+        output = main(text)
+        self.assertEquals(output[0].get('label'), 'TRIAL_REGISTRATION_ID')

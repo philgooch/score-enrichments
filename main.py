@@ -9,22 +9,28 @@ log = logging.getLogger(__name__)
 TRIAL_LABEL = "TRIAL_REGISTRATION_ID"
 DATA_AVAILABILITY_LABEL = "DATA_AVAILABILITY"
 
-
-DATA_AVAILABILITY_PATTERN_1 = [{'TEXT': {"REGEX": "^([Ss]upplementary|[Ss]upporting|[Ss]ource|[Cc]omputer|[Pp]rogram|[Ee]xperiment(al)?|[Aa]nonymi[sz]ed)$"}, "OP": "?"},
+DATA_AVAILABILITY_PATTERN_1 = [{'TEXT': {
+    "REGEX": "^([Ss]upplementary|[Ss]upporting|[Ss]ource|[Cc]omputer|[Pp]rogram|[Ee]xperiment(al)?|[Aa]nonymi[sz]ed)$"},
+                                "OP": "?"},
                                {"ORTH": ",", "OP": "?"}, {"IS_ALPHA": True, "OP": "?"}, {"ORTH": "-", "OP": "?"},
                                {"ORTH": ",", "OP": "?"}, {"IS_ALPHA": True, "OP": "?"}, {"ORTH": "-", "OP": "?"},
                                {"IS_ALPHA": True, "OP": "?"},
                                {"IS_ALPHA": True, "OP": "?"},
                                {"IS_ALPHA": True, "OP": "?"},
-                               {'TEXT': {"REGEX": "^([Cc]odes?|[Ff]iles|[Dd]ata(sets)?|[Mm]odels?|[Ss]scripts?|[Ss]oftware|[Ii]nformation)$"}},
+                               {'TEXT': {
+                                   "REGEX": "^([Cc]odes?|[Ff]iles|[Dd]ata(sets)?|[Mm]odels?|[Ss]scripts?|[Ss]oftware|[Ii]nformation)$"}},
                                {"ORTH": "sets", "OP": "?"},
                                {"ORTH": ",", "OP": "?"},
                                {'TEXT': {"REGEX": "^(and|&)$"}, "OP": "?"},
-                               {'TEXT': {"REGEX": "^([Cc]odes?|[Ff]iles|[Dd]ata(sets)?|[Mm]odels?|[Ss]scripts?|[Ss]oftware|[Ii]nformation)$"}, "OP": "?"},
+                               {'TEXT': {
+                                   "REGEX": "^([Cc]odes?|[Ff]iles|[Dd]ata(sets)?|[Mm]odels?|[Ss]scripts?|[Ss]oftware|[Ii]nformation)$"},
+                                "OP": "?"},
                                {"ORTH": "sets", "OP": "?"},
                                {"ORTH": ",", "OP": "?"},
                                {'TEXT': {"REGEX": "^(and|&)$"}, "OP": "?"},
-                               {'TEXT': {"REGEX": "^([Cc]odes?|[Ff]iles|[Dd]ata(sets)?|[Mm]odels?|[Ss]scripts?|[Ss]oftware|[Ii]nformation)$"}, "OP": "?"},
+                               {'TEXT': {
+                                   "REGEX": "^([Cc]odes?|[Ff]iles|[Dd]ata(sets)?|[Mm]odels?|[Ss]scripts?|[Ss]oftware|[Ii]nformation)$"},
+                                "OP": "?"},
                                {"ORTH": "sets", "OP": "?"},
                                {"ORTH": ",", "OP": "?"},
                                {'TEXT': {"REGEX": "^(and|&)$"}, "OP": "?"},
@@ -75,8 +81,7 @@ DATA_AVAILABILITY_PATTERN_1 = [{'TEXT': {"REGEX": "^([Ss]upplementary|[Ss]upport
                                {'TEXT': {"REGEX": "^(at|on|from|in|to|without)$"}},
                                {"ORTH": "restriction", "OP": "?"},
                                {"ORTH": ":", "OP": "?"},
-                               {"IS_ALPHA": True, "OP": "?"},
-                               {"IS_ALPHA": True, "OP": "?"}
+                               {"IS_ALPHA": True, "OP": "*"}
                                ]
 
 # TODO: We can probably combine some of these patterns, e.g. NCT|DRKS|ISRCTN
@@ -85,10 +90,20 @@ NCT_PATTERN_1 = [{'TEXT': {"REGEX": "^NCT[-\u2010-\u2013/]?[0-9]{8}(?=[.,:;)]|$)
 NCT_PATTERN_2 = [{'ORTH': "NCT"},
                  {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
                  {'TEXT': {"REGEX": "^[0-9]{8}(?=[.,:;)]|$)"}}]
+NCT_PATTERN_3 = [{'ORTH': "NCT"},
+                 {'TEXT': {"REGEX": "^(#|[Nn]o|[Nn]um(ber)?)$"}},
+                 {'ORTH': ":", "OP": "?"},
+                 {'TEXT': {"REGEX": "^[0-9]{8}(?=[.,:;)]|$)"}, "OP": "?"}
+                 ]
 
 # ANZCTR:
 ANZ_PATTERN_1 = [{'TEXT': {"REGEX": "^ACTRN[-\u2010-\u2013/]?[0-9]{14}(?=[.,:;)]|$)"}}]
 ANZ_PATTERN_2 = [{'ORTH': "ACTRN", "OP": "?"}, {'TEXT': {"REGEX": "^126[0-9]{11}(?=[.,:;)]|$)"}}]
+ANZ_PATTERN_3 = [{'ORTH': "ACTRN"},
+                 {'TEXT': {"REGEX": "^(#|[Nn]o|[Nn]um(ber)?)$"}},
+                 {'ORTH': ":", "OP": "?"},
+                 {'TEXT': {"REGEX": "^[0-9]{14}(?=[.,:;)]|$)"}, "OP": "?"}
+                 ]
 
 # Universal trial number
 # U1111-1254-7316
@@ -100,23 +115,36 @@ DRKS_PATTERN_1 = [{'TEXT': {"REGEX": "^DRKS[-\u2010-\u2013/]?[0-9]{8}(?=[.,:;)]|
 DRKS_PATTERN_2 = [{'ORTH': "DRKS"},
                   {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
                   {'TEXT': {"REGEX": "^[0-9]{8}(?=[.,:;)]|$)"}}]
+DRKS_PATTERN_3 = [{'ORTH': "DRKS"},
+                  {'TEXT': {"REGEX": "^(#|[Nn]o|[Nn]um(ber)?)$"}},
+                  {'ORTH': ":", "OP": "?"},
+                  {'TEXT': {"REGEX": "^[0-9]{8}(?=[.,:;)]|$)"}, "OP": "?"}
+                  ]
 
 # ISRCTN
 # ISRCTN14702259
 ISRCTN_PATTERN_1 = [{'TEXT': {"REGEX": "^ISRCTN[-\u2010-\u2013/]?[0-9]{8}(?=[.,:;)]|$)"}}]
 ISRCTN_PATTERN_2 = [{'ORTH': "ISRCTN"},
-                  {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
-                  {'TEXT': {"REGEX": "^[0-9]{8}(?=[.,:;)]|$)"}}]
-
+                    {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
+                    {'TEXT': {"REGEX": "^[0-9]{8}(?=[.,:;)]|$)"}}]
+ISRCTN_PATTERN_3 = [{'ORTH': "ISRCTN"},
+                    {'TEXT': {"REGEX": "^(#|[Nn]o|[Nn]um(ber)?)$"}},
+                    {'ORTH': ":", "OP": "?"},
+                    {'TEXT': {"REGEX": "^[0-9]{8}(?=[.,:;)]|$)"}, "OP": "?"}
+                    ]
 
 # CRD
 # CRD42020179519
 # https://www.crd.york.ac.uk/prospero/display_record.php?RecordID=179519
 CRD_PATTERN_1 = [{'TEXT': {"REGEX": "^CRD[-\u2010-\u2013/]?[0-9]{11}(?=[.,:;)]|$)"}}]
 CRD_PATTERN_2 = [{'ORTH': "CRD"},
-                  {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
-                  {'TEXT': {"REGEX": "^[0-9]{11}(?=[.,:;)]|$)"}}]
-
+                 {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
+                 {'TEXT': {"REGEX": "^[0-9]{11}(?=[.,:;)]|$)"}}]
+CRD_PATTERN_3 = [{'ORTH': "CRD"},
+                 {'TEXT': {"REGEX": "^(#|[Nn]o|[Nn]um(ber)?)$"}},
+                 {'ORTH': ":", "OP": "?"},
+                 {'TEXT': {"REGEX": "^[0-9]{11}(?=[.,:;)]|$)"}, "OP": "?"}
+                 ]
 
 # JPRN
 # https://apps.who.int/trialsearch/Trial2.aspx?TrialID=JPRN-UMIN000040928
@@ -129,39 +157,75 @@ JPRN_PATTERN_3 = [{'ORTH': "JPRN"},
                   {'ORTH': "UMIN"},
                   {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
                   {'TEXT': {"REGEX": "^[0-9]{9}(?=[.,:;)]|$)"}}]
+JPRN_PATTERN_4 = [{'ORTH': "JPRN"},
+                  {'TEXT': {"REGEX": "^(#|[Nn]o|[Nn]um(ber)?)$"}},
+                  {'ORTH': ":", "OP": "?"},
+                  {'TEXT': {"REGEX": "^[0-9]{9}(?=[.,:;)]|$)"}, "OP": "?"}
+                  ]
 
 # ChiCTR
 # http://www.chictr.org.cn/showprojen.aspx?proj=57931
 CHICTR_PATTERN_1 = [{'TEXT': {"REGEX": "^ChiCTR[-\u2010-\u2013/]?(IIR[-\u2010-\u2013/]?)?[0-9]{8,10}(?=[.,:;)]|$)"}}]
 CHICTR_PATTERN_2 = [{'ORTH': "ChiCTR"},
-                  {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
-                  {'TEXT': {"REGEX": "^IIR[-\u2010-\u2013/]?[0-9]{8,10}(?=[.,:;)]|$)"}}]
+                    {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
+                    {'TEXT': {"REGEX": "^IIR[-\u2010-\u2013/]?[0-9]{8,10}(?=[.,:;)]|$)"}}]
 CHICTR_PATTERN_3 = [{'ORTH': "ChiCTR"},
-                  {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
-                  {'ORTH': "IIR", "OP": "?"},
-                  {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
-                  {'TEXT': {"REGEX": "^[0-9]{8,10}(?=[.,:;)]|$)"}}]
-
+                    {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
+                    {'ORTH': "IIR", "OP": "?"},
+                    {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
+                    {'TEXT': {"REGEX": "^[0-9]{8,10}(?=[.,:;)]|$)"}}]
+CHICTR_PATTERN_4 = [{'ORTH': "ChiCTR"},
+                    {'TEXT': {"REGEX": "^(#|[Nn]o|[Nn]um(ber)?)$"}},
+                    {'ORTH': ":", "OP": "?"},
+                    {'TEXT': {"REGEX": "^[0-9]{8,10}(?=[.,:;)]|$)"}, "OP": "?"}
+                    ]
 
 # PACTR
 # PACTR202008685699453
 # https://apps.who.int/trialsearch/Trial2.aspx?TrialID=PACTR202008685699453
 PACTR_PATTERN_1 = [{'TEXT': {"REGEX": "^PACTR[-\u2010-\u2013/]?[0-9]{15}(?=[.,:;)]|$)"}}]
 PACTR_PATTERN_2 = [{'ORTH': "PACTR"},
-                  {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
-                  {'TEXT': {"REGEX": "^[0-9]{15}(?=[.,:;)]|$)"}}]
-
+                   {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
+                   {'TEXT': {"REGEX": "^[0-9]{15}(?=[.,:;)]|$)"}}]
+PACTR_PATTERN_3 = [{'ORTH': "PACTR"},
+                   {'TEXT': {"REGEX": "^(#|[Nn]o|[Nn]um(ber)?)$"}},
+                   {'ORTH': ":", "OP": "?"},
+                   {'TEXT': {"REGEX": "^[0-9]{15}(?=[.,:;)]|$)"}, "OP": "?"}
+                   ]
 
 # KCT
 # KCT0005285
 # https://apps.who.int/trialsearch/Trial2.aspx?TrialID=KCT0005285
 KCT_PATTERN_1 = [{'TEXT': {"REGEX": "^KCT[-\u2010-\u2013/]?[0-9]{7}(?=[.,:;)]|$)$"}}]
 KCT_PATTERN_2 = [{'ORTH': "KCT"},
-                  {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
-                  {'TEXT': {"REGEX": "^[0-9]{7}(?=[.,:;)]|$)$"}}]
+                 {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
+                 {'TEXT': {"REGEX": "^[0-9]{7}(?=[.,:;)]|$)$"}}]
+KCT_PATTERN_3 = [{'ORTH': "KCT"},
+                 {'TEXT': {"REGEX": "^(#|[Nn]o|[Nn]um(ber)?)$"}},
+                 {'ORTH': ":", "OP": "?"},
+                 {'TEXT': {"REGEX": "^[0-9]{7}(?=[.,:;)]|$)"}, "OP": "?"}
+                 ]
 
 # https://aspredicted.org/
 ASP_PATTERN = [{'TEXT': {"REGEX": "^https?://aspredicted.org/.+$"}}]
+
+# EudraCT
+# https://www.clinicaltrialsregister.eu/ctr-search/search?query=covid-19
+EUDRACT_PATTERN_1 = [{'TEXT': {"REGEX": "^EudraCT$"}},
+                     {'TEXT': {"REGEX": "^(#|[Nn]o|[Nn]um(ber)?)$"}},
+                     {'ORTH': ":", "OP": "?"},
+                     {'TEXT': {"REGEX": "^[0-9]{4}$"}},
+                     {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
+                     {'TEXT': {"REGEX": "^[0-9]{6}$"}},
+                     {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
+                     {'TEXT': {"REGEX": "^[0-9]{2}$"}}
+                     ]
+EUDRACT_PATTERN_2 = [{'TEXT': {"REGEX": "^EudraCT#[0-9]{4}$"}},
+                     {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
+                     {'TEXT': {"REGEX": "^[0-9]{6}$"}},
+                     {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
+                     {'TEXT': {"REGEX": "^[0-9]{2}$"}}
+                     ]
 
 
 def file_to_text(file_path):
@@ -186,26 +250,37 @@ def main(file_path_or_input_text=None):
     patterns = [
         {"label": TRIAL_LABEL, "pattern": NCT_PATTERN_1},
         {"label": TRIAL_LABEL, "pattern": NCT_PATTERN_2},
+        {"label": TRIAL_LABEL, "pattern": NCT_PATTERN_3},
         {"label": TRIAL_LABEL, "pattern": ANZ_PATTERN_1},
         {"label": TRIAL_LABEL, "pattern": ANZ_PATTERN_2},
+        {"label": TRIAL_LABEL, "pattern": ANZ_PATTERN_3},
         {"label": TRIAL_LABEL, "pattern": UTN_PATTERN},
         {"label": TRIAL_LABEL, "pattern": DRKS_PATTERN_1},
         {"label": TRIAL_LABEL, "pattern": DRKS_PATTERN_2},
+        {"label": TRIAL_LABEL, "pattern": DRKS_PATTERN_3},
         {"label": TRIAL_LABEL, "pattern": ISRCTN_PATTERN_1},
         {"label": TRIAL_LABEL, "pattern": ISRCTN_PATTERN_2},
+        {"label": TRIAL_LABEL, "pattern": ISRCTN_PATTERN_3},
         {"label": TRIAL_LABEL, "pattern": CRD_PATTERN_1},
         {"label": TRIAL_LABEL, "pattern": CRD_PATTERN_2},
+        {"label": TRIAL_LABEL, "pattern": CRD_PATTERN_3},
         {"label": TRIAL_LABEL, "pattern": JPRN_PATTERN_1},
         {"label": TRIAL_LABEL, "pattern": JPRN_PATTERN_2},
         {"label": TRIAL_LABEL, "pattern": JPRN_PATTERN_3},
+        {"label": TRIAL_LABEL, "pattern": JPRN_PATTERN_4},
         {"label": TRIAL_LABEL, "pattern": CHICTR_PATTERN_1},
         {"label": TRIAL_LABEL, "pattern": CHICTR_PATTERN_2},
         {"label": TRIAL_LABEL, "pattern": CHICTR_PATTERN_3},
+        {"label": TRIAL_LABEL, "pattern": CHICTR_PATTERN_4},
         {"label": TRIAL_LABEL, "pattern": PACTR_PATTERN_1},
         {"label": TRIAL_LABEL, "pattern": PACTR_PATTERN_2},
+        {"label": TRIAL_LABEL, "pattern": PACTR_PATTERN_3},
         {"label": TRIAL_LABEL, "pattern": KCT_PATTERN_1},
         {"label": TRIAL_LABEL, "pattern": KCT_PATTERN_2},
+        {"label": TRIAL_LABEL, "pattern": KCT_PATTERN_3},
         {"label": TRIAL_LABEL, "pattern": ASP_PATTERN},
+        {"label": TRIAL_LABEL, "pattern": EUDRACT_PATTERN_1},
+        {"label": TRIAL_LABEL, "pattern": EUDRACT_PATTERN_2},
         {"label": DATA_AVAILABILITY_LABEL, "pattern": DATA_AVAILABILITY_PATTERN_1},
     ]
     ruler.add_patterns(patterns)
