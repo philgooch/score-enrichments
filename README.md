@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/philgooch/score-enrichments.svg)](https://travis-ci.org/philgooch/score-enrichments)
+
 # Installation
 
 - Install Python 3 if not already installed

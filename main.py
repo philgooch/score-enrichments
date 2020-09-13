@@ -82,6 +82,10 @@ DATA_AVAILABILITY_PATTERN_1 = [{'TEXT': {
     {"ORTH": "restriction", "OP": "?"},
     {"ORTH": ":", "OP": "?"},
     {"IS_ALPHA": True, "OP": "*"},
+    {'TEXT': {"REGEX": "^[\u2019']s$"}, "OP": "?"},
+    {"IS_ALPHA": True, "OP": "*"},
+    {'TEXT': {"REGEX": "^[-0-9\u2010-\u2013]$"}, "OP": "*"},
+    {"IS_ALPHA": True, "OP": "*"},
     {"ORTH": "(", "OP": "?"},
     {'TEXT': {"REGEX": "^(https?://.+|goo.gl/)$"}, "OP": "?"},
     {"ORTH": ")", "OP": "?"},
@@ -230,6 +234,17 @@ EUDRACT_PATTERN_2 = [{'TEXT': {"REGEX": "^EudraCT#[0-9]{4}$"}},
                      {'TEXT': {"REGEX": "^[0-9]{2}$"}}
                      ]
 
+GENERAL_PREREG_PATTERN = [{'TEXT': {"REGEX": "^[Pp]re$"}, "OP": "?"},
+                          {'TEXT': {"REGEX": "[-\u2010-\u2013/]"}, "OP": "?"},
+                          {'TEXT': {"REGEX": "^([Pp]re)?[Rr]egist(ered|ration)$"}},
+                          {"IS_ALPHA": True, "OP": "?"},
+                          {"IS_ALPHA": True, "OP": "?"},
+                          {"IS_ALPHA": True, "OP": "?"},
+                          {'TEXT': {"REGEX": "^(at|from|:)$"}},
+                          {'ORTH': ":", "OP": "?"},
+                          {'TEXT': {"REGEX": "^https?://.+$"}}
+                          ]
+
 
 def file_to_text(file_path):
     doc_text = ''
@@ -284,6 +299,7 @@ def main(file_path_or_input_text=None):
         {"label": TRIAL_LABEL, "pattern": ASP_PATTERN},
         {"label": TRIAL_LABEL, "pattern": EUDRACT_PATTERN_1},
         {"label": TRIAL_LABEL, "pattern": EUDRACT_PATTERN_2},
+        {"label": TRIAL_LABEL, "pattern": GENERAL_PREREG_PATTERN},
         {"label": DATA_AVAILABILITY_LABEL, "pattern": DATA_AVAILABILITY_PATTERN_1},
     ]
     ruler.add_patterns(patterns)
