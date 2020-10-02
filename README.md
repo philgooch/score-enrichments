@@ -48,7 +48,7 @@ You will do this by running an annotation session, one file at a time.
 See `ner.teach` in https://prodi.gy/docs/recipes#ner
 
 ```
-prodigy ner.teach ner_score_registrations en_core_web_sm /path/to/file/eg/Imhoff_JournExpSocPsych_2018_jJ.jsonl  --label TRIAL_REGISTRATION_ID,DATA_AVAILABILITY --patterns ./registration_patterns.jsonl
+prodigy ner.teach ner_score_registrations en_core_web_sm /path/to/file/eg/concat_data.jsonl  --label TRIAL_REGISTRATION_ID,DATA_AVAILABILITY_OPEN_URL,DATA_AVAILABILITY_OPEN_SUPPLEMENT,DATA_AVAILABILITY_CLOSED --patterns ./registration_patterns.jsonl
 ```
 
 As the input `.jsonl` files should already be sentence-delimited, 

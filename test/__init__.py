@@ -7,40 +7,40 @@ class TestPatterns(TestCase):
     def test_extract_data_availability(self):
         text = 'Supplementary data is available from the author'
         output = main(text)
-        self.assertEquals(output[0].get('label'), 'DATA_AVAILABILITY')
+        self.assertEquals(output[0].get('label'), 'DATA_AVAILABILITY_CLOSED')
 
     def test_extract_data_availability_1(self):
         text = "Anonymised, patient level data are available from the corresponding author upon request, " \
                "subject to submission of a suitable study protocol and analysis plan"
         output = main(text)
-        self.assertEquals(output[0].get('label'), 'DATA_AVAILABILITY')
+        self.assertEquals(output[0].get('label'), 'DATA_AVAILABILITY_CLOSED')
 
     def test_extract_data_availability_2(self):
         text = "The computer code used in this study is available from the authors upon request"
         output = main(text)
-        self.assertEquals(output[0].get('label'), 'DATA_AVAILABILITY')
+        self.assertEquals(output[0].get('label'), 'DATA_AVAILABILITY_CLOSED')
 
     def test_extract_data_availability_3(self):
         text = "Our source code is available at goo.gl/TXBp4e"
         output = main(text)
-        self.assertEquals(output[0].get('label'), 'DATA_AVAILABILITY')
+        self.assertEquals(output[0].get('label'), 'DATA_AVAILABILITY_OPEN_URL')
 
     def test_extract_data_availability_4(self):
         text = "Supplementary Data are available at IJE online"
         output = main(text)
-        self.assertEquals(output[0].get('label'), 'DATA_AVAILABILITY')
+        self.assertEquals(output[0].get('label'), 'DATA_AVAILABILITY_OPEN_SUPPLEMENT')
 
     def test_extract_data_availability_5(self):
         text = "Crystallographic data that support the findings of this study have been deposited in the Protein " \
                "Data Bank with the accession codes 5TSG and 5TSH"
         output = main(text)
-        self.assertEquals(output[0].get('label'), 'DATA_AVAILABILITY')
+        self.assertEquals(output[0].get('label'), 'DATA_AVAILABILITY_OPEN_SUPPLEMENT')
 
     def test_extract_data_availability_6(self):
         text = "The code to reproduce our experimental setup is provided at " \
                "https://github.com/google-research/google-research/tree/master/summae"
         output = main(text)
-        self.assertEquals(output[0].get('label'), 'DATA_AVAILABILITY')
+        self.assertEquals(output[0].get('label'), 'DATA_AVAILABILITY_OPEN_URL')
 
     def test_extract_data_availability_7(self):
         text = 'Supplementary data is available on the publisher\u2019s web-site'
@@ -48,7 +48,7 @@ class TestPatterns(TestCase):
         entity_label = output[0].get('label')
         entity_text = output[0].get('entity')
         self.assertEquals(entity_text, 'Supplementary data is available on the publisher\u2019s web-site')
-        self.assertEquals(entity_label, 'DATA_AVAILABILITY')
+        self.assertEquals(entity_label, 'DATA_AVAILABILITY_OPEN_SUPPLEMENT')
 
     def test_extract_data_availability_8(self):
         text = 'Supplementary data is available in Appendices I\u2013L'
@@ -56,7 +56,7 @@ class TestPatterns(TestCase):
         entity_label = output[0].get('label')
         entity_text = output[0].get('entity')
         self.assertEquals(entity_text, 'Supplementary data is available in Appendices I\u2013L')
-        self.assertEquals(entity_label, 'DATA_AVAILABILITY')
+        self.assertEquals(entity_label, 'DATA_AVAILABILITY_OPEN_SUPPLEMENT')
 
     def test_extract_data_availability_9(self):
         text = 'Supplementary data is available in Appendix 1, and figures can be obtained separately'
@@ -64,7 +64,7 @@ class TestPatterns(TestCase):
         entity_label = output[0].get('label')
         entity_text = output[0].get('entity')
         self.assertEquals(entity_text, 'Supplementary data is available in Appendix 1')
-        self.assertEquals(entity_label, 'DATA_AVAILABILITY')
+        self.assertEquals(entity_label, 'DATA_AVAILABILITY_OPEN_SUPPLEMENT')
 
     def test_extract_trial_registration(self):
         text = "The trial is registeredwith the Australian and New Zealand Clinical " \

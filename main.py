@@ -1,5 +1,6 @@
 import sys
 import os
+import re
 import logging
 from spacy.lang.en import English
 from spacy.pipeline import EntityRuler
@@ -7,9 +8,11 @@ from spacy.pipeline import EntityRuler
 log = logging.getLogger(__name__)
 
 TRIAL_LABEL = "TRIAL_REGISTRATION_ID"
-DATA_AVAILABILITY_LABEL = "DATA_AVAILABILITY"
+DATA_AVAILABILITY_LABEL_URL = "DATA_AVAILABILITY_OPEN_URL"
+DATA_AVAILABILITY_LABEL_SUPPL = "DATA_AVAILABILITY_OPEN_SUPPLEMENT"
+DATA_AVAILABILITY_LABEL_CLOSED = "DATA_AVAILABILITY_CLOSED"
 
-DATA_AVAILABILITY_PATTERN_1 = [{'TEXT': {
+DATA_AVAILABILITY_PATTERN_URL = [{'TEXT': {
     "REGEX": "^([Ss]upplementary|[Ss]upporting|[Ss]ource|[Cc]omputer|[Pp]rogram|[Ee]xperiment(al)?|[Aa]nonymi[sz]ed)$"},
     "OP": "?"},
     {"ORTH": ",", "OP": "?"}, {"IS_ALPHA": True, "OP": "?"}, {"ORTH": "-", "OP": "?"},
@@ -59,7 +62,7 @@ DATA_AVAILABILITY_PATTERN_1 = [{'TEXT': {
     {"IS_ALPHA": True, "OP": "?"},
     {"ORTH": ",", "OP": "?"},
     {"IS_ALPHA": True, "OP": "?"},
-    {'TEXT': {"REGEX": "^(is|are|can|may|will|have)$"}},
+    {'TEXT': {"REGEX": "^(is|are|can|may|will|has|have)$"}},
     {'TEXT': {"REGEX": "^(be|been)$"}, "OP": "?"},
     {"IS_ALPHA": True, "OP": "?"},
     {"IS_ALPHA": True, "OP": "?"},
@@ -87,8 +90,161 @@ DATA_AVAILABILITY_PATTERN_1 = [{'TEXT': {
     {'TEXT': {"REGEX": "^[-0-9\u2010-\u2013]$"}, "OP": "*"},
     {"IS_ALPHA": True, "OP": "*"},
     {"ORTH": "(", "OP": "?"},
-    {'TEXT': {"REGEX": "^(https?://.+|goo.gl/)$"}, "OP": "?"},
+    {'TEXT': {"REGEX": "^(https?://.+|goo.gl/.+)$"}},
     {"ORTH": ")", "OP": "?"},
+]
+
+DATA_AVAILABILITY_PATTERN_CLOSED = [{'TEXT': {
+    "REGEX": "^([Ss]upplementary|[Ss]upporting|[Ss]ource|[Cc]omputer|[Pp]rogram|[Ee]xperiment(al)?|[Aa]nonymi[sz]ed)$"},
+    "OP": "?"},
+    {"ORTH": ",", "OP": "?"}, {"IS_ALPHA": True, "OP": "?"}, {"ORTH": "-", "OP": "?"},
+    {"ORTH": ",", "OP": "?"}, {"IS_ALPHA": True, "OP": "?"}, {"ORTH": "-", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {'TEXT': {
+        "REGEX": "^([Cc]odes?|[Ff]iles|[Dd]ata(sets)?|[Mm]odels?|[Ss]scripts?|[Ss]oftware|[Ii]nformation)$"}},
+    {"ORTH": "sets", "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {'TEXT': {"REGEX": "^(and|&)$"}, "OP": "?"},
+    {'TEXT': {
+        "REGEX": "^([Cc]odes?|[Ff]iles|[Dd]ata(sets)?|[Mm]odels?|[Ss]scripts?|[Ss]oftware|[Ii]nformation)$"},
+        "OP": "?"},
+    {"ORTH": "sets", "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {'TEXT': {"REGEX": "^(and|&)$"}, "OP": "?"},
+    {'TEXT': {
+        "REGEX": "^([Cc]odes?|[Ff]iles|[Dd]ata(sets)?|[Mm]odels?|[Ss]scripts?|[Ss]oftware|[Ii]nformation)$"},
+        "OP": "?"},
+    {"ORTH": "sets", "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {'TEXT': {"REGEX": "^(and|&)$"}, "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {'TEXT': {"REGEX": "^(is|are|can|may|will|has|have)$"}},
+    {'TEXT': {"REGEX": "^(be|been)$"}, "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {'TEXT': {"REGEX": "^(available|requested|provided)$"}},
+    {"ORTH": ",", "OP": "?"},
+    {"ORTH": "(", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"ORTH": ")", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"ORTH": ")", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"ORTH": ")", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"ORTH": ")", "OP": "?"},
+    {'TEXT': {"REGEX": "^(by|on|from)$"}},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {'TEXT': {"REGEX": "^(request|authors?)$"}}
+]
+
+DATA_AVAILABILITY_PATTERN_SUPPLEMENT = [{'TEXT': {
+    "REGEX": "^([Ss]upplementary|[Ss]upporting|[Ss]ource|[Cc]omputer|[Pp]rogram|[Ee]xperiment(al)?|[Aa]nonymi[sz]ed)$"},
+    "OP": "?"},
+    {"ORTH": ",", "OP": "?"}, {"IS_ALPHA": True, "OP": "?"}, {"ORTH": "-", "OP": "?"},
+    {"ORTH": ",", "OP": "?"}, {"IS_ALPHA": True, "OP": "?"}, {"ORTH": "-", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {'TEXT': {
+        "REGEX": "^([Cc]odes?|[Ff]iles|[Dd]ata(sets)?|[Mm]odels?|[Ss]scripts?|[Ss]oftware|[Ii]nformation)$"}},
+    {"ORTH": "sets", "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {'TEXT': {"REGEX": "^(and|&)$"}, "OP": "?"},
+    {'TEXT': {
+        "REGEX": "^([Cc]odes?|[Ff]iles|[Dd]ata(sets)?|[Mm]odels?|[Ss]scripts?|[Ss]oftware|[Ii]nformation)$"},
+        "OP": "?"},
+    {"ORTH": "sets", "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {'TEXT': {"REGEX": "^(and|&)$"}, "OP": "?"},
+    {'TEXT': {
+        "REGEX": "^([Cc]odes?|[Ff]iles|[Dd]ata(sets)?|[Mm]odels?|[Ss]scripts?|[Ss]oftware|[Ii]nformation)$"},
+        "OP": "?"},
+    {"ORTH": "sets", "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {'TEXT': {"REGEX": "^(and|&)$"}, "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {'TEXT': {"REGEX": "^(is|are|can|may|will|has|have)$"}},
+    {'TEXT': {"REGEX": "^(be|been)$"}, "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {'TEXT': {"REGEX": "^(available|found|deposited|provided)$"}},
+    {"ORTH": ",", "OP": "?"},
+    {"ORTH": "(", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"ORTH": ")", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"ORTH": ")", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"ORTH": ")", "OP": "?"},
+    {"IS_ALPHA": True, "OP": "?"},
+    {"ORTH": ",", "OP": "?"},
+    {"ORTH": ")", "OP": "?"},
+    {'TEXT': {"REGEX": "^(at|on|in)$"}},
+    {"IS_ALPHA": True, "OP": "*"},
+    {'TEXT': {"REGEX": "^[\u2019']s$"}, "OP": "?"},
+    {'TEXT': {"REGEX": "^([Ww]eb(site)?|[Oo]nline|[Ss]upplements?|[Aa]ppendix|[Aa]ppendices|[Aa]ccession)$"}},
+    {"IS_ALPHA": True, "OP": "?"},
+    {'TEXT': {"REGEX": "^[-0-9\u2010-\u2013]$"}, "OP": "*"},
+    {"IS_ALPHA": True, "OP": "?"},
 ]
 
 # TODO: We can probably combine some of these patterns, e.g. NCT|DRKS|ISRCTN
@@ -300,7 +456,9 @@ def main(file_path_or_input_text=None):
         {"label": TRIAL_LABEL, "pattern": EUDRACT_PATTERN_1},
         {"label": TRIAL_LABEL, "pattern": EUDRACT_PATTERN_2},
         {"label": TRIAL_LABEL, "pattern": GENERAL_PREREG_PATTERN},
-        {"label": DATA_AVAILABILITY_LABEL, "pattern": DATA_AVAILABILITY_PATTERN_1},
+        {"label": DATA_AVAILABILITY_LABEL_URL, "pattern": DATA_AVAILABILITY_PATTERN_URL},
+        {"label": DATA_AVAILABILITY_LABEL_CLOSED, "pattern": DATA_AVAILABILITY_PATTERN_CLOSED},
+        {"label": DATA_AVAILABILITY_LABEL_SUPPL, "pattern": DATA_AVAILABILITY_PATTERN_SUPPLEMENT},
     ]
     ruler.add_patterns(patterns)
     nlp.add_pipe(ruler)
