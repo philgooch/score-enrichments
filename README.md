@@ -2,7 +2,7 @@
 
 # Installation
 
-- Install Python 3 if not already installed
+- Install Python 3 if not already installed.
 - Create a virtual environment:
 
 ```
