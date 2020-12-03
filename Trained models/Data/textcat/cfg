@@ -1,0 +1,10 @@
+{
+  "exclusive_classes":false,
+  "labels":[
+    "DATA_AVAILABILITY_CLOSED",
+    "DATA_AVAILABILITY_OPEN_SUPPLEMENT",
+    "DATA_AVAILABILITY_OPEN_URL"
+  ],
+  "pretrained_vectors":null,
+  "pretrained_dims":null
+}

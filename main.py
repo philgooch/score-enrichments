@@ -367,7 +367,7 @@ def main(file_path_or_input_text=None):
         doc_text = file_path_or_input_text
     doc = nlp(doc_text)
     # Output patterns to disk
-    ruler.to_disk("./registration_patterns.jsonl")
+    ruler.to_disk("./patterns.jsonl")
     entity_data = []
     for sent in doc.sents:
         for ent in sent.ents:

@@ -1,6 +1,12 @@
 [![Build Status](https://travis-ci.org/philgooch/score-enrichments.svg)](https://travis-ci.org/philgooch/score-enrichments)
 
-# Installation
+# Output: Models and Annotations
+- See 'Trained models' and 'Annotations' folder
+- Example usage code in run.py
+
+---
+---
+# Training: Installation
 
 - Install Python 3 if not already installed.
 - Create a virtual environment:
@@ -43,12 +49,12 @@ This script will omit the References section from each input PDF.
 Still, you may wish to filter out noisy lines, such as titles, authors, affiliations etc.
 You could filter out lines less than a certain length, for example.
 
-Next, we need to teach Prodigy to label the data, using the `registration_patterns.jsonl` file as a guide.
+Next, we need to teach Prodigy to label the data, using the `patterns.jsonl` file as a guide.
 You will do this by running an annotation session, one file at a time.
 See `ner.teach` in https://prodi.gy/docs/recipes#ner
 
 ```
-prodigy ner.teach ner_score_registrations en_core_web_sm /path/to/file/eg/concat_data.jsonl  --label TRIAL_REGISTRATION_ID,DATA_AVAILABILITY_OPEN_URL,DATA_AVAILABILITY_OPEN_SUPPLEMENT,DATA_AVAILABILITY_CLOSED --patterns ./registration_patterns.jsonl
+prodigy ner.teach ner_score_registrations en_core_web_sm /path/to/file/eg/concat_data.jsonl  --label TRIAL_REGISTRATION_ID,DATA_AVAILABILITY_OPEN_URL,DATA_AVAILABILITY_OPEN_SUPPLEMENT,DATA_AVAILABILITY_CLOSED --patterns ./patterns.jsonl
 ```
 
 As the input `.jsonl` files should already be sentence-delimited, 
