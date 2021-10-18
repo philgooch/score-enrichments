@@ -317,7 +317,7 @@ def file_to_text(file_path):
 
 def main(file_path_or_input_text=None):
     nlp = English()
-    ruler = EntityRuler(nlp)
+    ruler = nlp.add_pipe("entity_ruler")
     patterns = [
         {"label": TRIAL_LABEL, "pattern": NCT_PATTERN_1},
         {"label": TRIAL_LABEL, "pattern": NCT_PATTERN_2},
@@ -358,8 +358,7 @@ def main(file_path_or_input_text=None):
         {"label": DATA_AVAILABILITY_LABEL_SUPPL, "pattern": DATA_AVAILABILITY_PATTERN_SUPPLEMENT},
     ]
     ruler.add_patterns(patterns)
-    nlp.add_pipe(ruler)
-    nlp.add_pipe(nlp.create_pipe('sentencizer'))
+    nlp.add_pipe("sentencizer")
 
     if os.path.isfile(file_path_or_input_text):
         doc_text = file_to_text(file_path_or_input_text)
